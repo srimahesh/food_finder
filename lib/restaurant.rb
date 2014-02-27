@@ -34,8 +34,20 @@ class Restaurant
 	end
 
 	def self.saved_restaurants
+		# We have to ask ouselves, do we want a fresh copy each
+		# time or do we want to store the results in a variable?
+
 		# read the restaurant file
+		restaurants = []
+		if file_usable?
+			file = File.new(@@filepath, 'r')
+			file.each_line do |line|
+				restaurants << Restaurant.new.import_line(line.chomp)
+			end
+			file.close
+		end
 		# return instances of restaurant
+		return restaurants
 	end
 
 	def self.build_using_questions
@@ -71,6 +83,11 @@ class Restaurant
 		return true
 	end
 
+	def import_line(line)
+		line_array = line.split("\t")
+		@name, @cuisine, @price = line_array
+		return self
+	end
 
 end
 
