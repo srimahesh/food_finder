@@ -38,8 +38,30 @@ class Restaurant
 		# return instances of restaurant
 	end
 
+	def self.build_using_questions
+		args = {}
+
+	    print "\n Restaurant name: "
+	    args[:name] = gets.chomp.strip
+
+	    print "\n Cuisine name: "
+	    args[:cuisine] = gets.chomp.strip
+
+	    print "\n Average price: "
+	    args[:price] = gets.chomp.strip
+
+	    # restaurant = Restaurant.new(args)
+	    return self.new(args)
+	end
 
 	### ALl Instance methods, below the CLass methods ###
+
+	def initialize(args={})
+		@name	 = args[:name]    || ""
+		@cuisine = args[:cuisine] || ""
+		@price 	 = args[:price]   || ""
+		# Make sure all the three attributes are set before saving, to the DB
+	end
 
 	def save
 		return false unless Restaurant.file_usable?

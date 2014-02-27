@@ -50,8 +50,6 @@ class Guide
     return action
 	end
 
-
-
 	def do_action(action)
 		case action
 		when 'list'
@@ -70,16 +68,7 @@ class Guide
   def add
     puts "\nAdd a new Restaurant\n\n".upcase
 
-    restaurant = Restaurant.new
-
-    print "\n Restaurant name: "
-    restaurant.name = gets.chomp.strip
-
-    print "\n Cuisine name: "
-    restaurant.cuisine = gets.chomp.strip
-
-    print "\n Average price: "
-    restaurant.price = gets.chomp.strip
+    restaurant = Restaurant.build_using_questions
 
     if restaurant.save
       print "\n Restaurant saved!\n"
