@@ -21,15 +21,38 @@ class Guide
 		introduction
 		# action loop (Read, eval, try)
 		# 	what do you want to do? (list, find, add, quit)
-		# 	do that action
+		result = nil
+		until result == :quit 
+			print "> "
+			user_response = gets.chomp
+			# break if user_reesponse == 'quit'
+		# do that action
+			result = do_action(user_response)
 		# repeat until user quits
+		#	break if result == :quit
+		end
 		conclusion
 	end
+
+
+	def do_action(action)
+		case action
+		when 'list'
+			puts 'listing..'
+		when 'find'
+			puts 'finding...'
+		when 'add'
+			puts 'adding..'
+		when 'quit'
+			return :quit
+		else
+			puts "\n I don't know what to do! \n"
+		end
+	end	
 
 	def introduction
 		puts "\n\n<<< Welcome to the Food Finder >>>\n\n"
 		puts "This is an interactive guide to help you find the food you crave. \n\n"
-
 	end
 
 	def conclusion
