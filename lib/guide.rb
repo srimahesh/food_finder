@@ -1,4 +1,5 @@
 require 'restaurant'
+require 'support/string_extend'
 
 class Guide
   # Can create a class variable, but using a class for illustration
@@ -66,8 +67,8 @@ class Guide
 	end	
 
   def add
-    puts "\nAdd a new Restaurant\n\n".upcase
-
+    output_header_list("Add a new Restaurant")
+    
     restaurant = Restaurant.build_using_questions
 
     if restaurant.save
@@ -78,13 +79,10 @@ class Guide
   end
 
   def list
-    puts "\nList Restaurants\n\n".upcase
-
+    output_header_list("List Restaurants")
     restaurants = Restaurant.saved_restaurants
     # displaying the rests
-    restaurants.each do |rest|
-      puts rest.name + " | " + rest.cuisine + " | " + rest.price
-    end
+    output_restaurant_table(restaurants)
   end
 
 	def introduction
@@ -96,4 +94,25 @@ class Guide
 		puts "\n<<< Goodbye and Bon Appetit! >>> \n\n\n"
 	end
 
+
+  private 
+
+  def output_header_list(text)
+     puts "\n#{text.upcase.center(60)}\n\n"
+  end
+
+  def output_restaurant_table(restaurants)
+    puts " " + "Name".ljust(30)
+    puts " " + "Cuisine".ljust(20)
+    puts " " + "Price".ljust(6)
+    puts "-" * 60
+    restaurants.each do |rest|
+      line =  " " + rest.name.titleize.ljust(30)
+      line << " " + rest.cuisine.titleize.ljust(20)
+      line << " " + rest.formated_price.ljust(6)
+      puts line
+    end
+    puts "\nNo Restaurants found" if restaurants.empty?
+    puts "-" * 60
+  end
 end

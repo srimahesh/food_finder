@@ -1,4 +1,7 @@
+require 'support/number_helper'
+
 class Restaurant
+	include NumberHelper
 
 	@@filepath = nil
 
@@ -87,6 +90,10 @@ class Restaurant
 		line_array = line.split("\t")
 		@name, @cuisine, @price = line_array
 		return self
+	end
+
+	def formated_price
+		number_to_currency(@price)
 	end
 
 end
