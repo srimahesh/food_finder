@@ -29,10 +29,10 @@ class Guide
 		# 	what do you want to do? (list, find, add, quit)
 		result = nil
 		until result == :quit 
-			user_response = get_action
+			action, args = get_action
 			# break if user_reesponse == 'quit'
 		# do that action
-			result = do_action(user_response)
+			result = do_action(action, args)
 		# repeat until user quits
 		#	break if result == :quit
 		end
@@ -45,18 +45,20 @@ class Guide
     until Guide::Config.actions.include?(action)
       puts "Actions: " + Guide::Config.actions.join(", ") if action
   		print "> "
-      user_response = gets.chomp
-      action = user_response.downcase.strip
+      user_reesponse = gets.chomp
+      args = user_reesponse.downcase.strip.split(' ')
+      action = args.shift
     end
-    return action
+    return action, args
 	end
 
-	def do_action(action)
+	def do_action(action, args=[])
 		case action
 		when 'list'
-			list
+			list(args)
 		when 'find'
-			puts 'finding...'
+      keyword = args.shift   # Considering only the first keyword
+			find(keyword)
 		when 'add'
 			add
 		when 'quit'
@@ -68,7 +70,7 @@ class Guide
 
   def add
     output_header_list("Add a new Restaurant")
-    
+
     restaurant = Restaurant.build_using_questions
 
     if restaurant.save
@@ -78,11 +80,47 @@ class Guide
     end
   end
 
-  def list
+  def list(args=[])
+
+    sort_order = args.shift 
+    # sort_order ||= "name"
+    sort_order = args.shift if sort_order == "by"
+    sort_order = "name" unless ['name', 'cuisine', 'price'].include?(sort_order)
+
     output_header_list("List Restaurants")
+
     restaurants = Restaurant.saved_restaurants
+    restaurants.sort! do |r1, r2|
+      case sort_order 
+     when "name"  
+      r1.name.downcase <=> r2.name.downcase
+     when "cuisine"
+      r1.cuisine.downcase <=> r2.cuisine.downcase
+     when "price"
+      r1.price.to_i <=> r2.price.to_i
+      end
+    end
+      
+
     # displaying the rests
     output_restaurant_table(restaurants)
+    puts "Sort using: 'list cuisine' or 'list by cuisine'"
+  end
+
+  def find(keyword="")
+    output_header_list("\nFind a restaurant\n\n")
+    if keyword
+      restaurants = Restaurant.saved_restaurants
+      found = restaurants.select do |rest|
+        rest.name.downcase.include?(keyword.downcase) ||
+        rest.cuisine.downcase.include?(keyword.downcase) ||
+        rest.price.to_i <= keyword.to_i
+      end
+      output_restaurant_table(found)
+    else
+      puts "\n Please enter a search phrase from the list"
+      puts "\nFor ex, 'find mexican', 'find mex', 'find Tamale' "
+    end
   end
 
 	def introduction
@@ -102,8 +140,8 @@ class Guide
   end
 
   def output_restaurant_table(restaurants)
-    puts " " + "Name".ljust(30)
-    puts " " + "Cuisine".ljust(20)
+    print " " + "Name".ljust(30)
+    print " " + "Cuisine".ljust(20)
     puts " " + "Price".ljust(6)
     puts "-" * 60
     restaurants.each do |rest|
@@ -112,7 +150,7 @@ class Guide
       line << " " + rest.formated_price.ljust(6)
       puts line
     end
-    puts "\nNo Restaurants found" if restaurants.empty?
+    puts "\nNo Listings found" if restaurants.empty?
     puts "-" * 60
   end
 end
